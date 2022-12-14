@@ -2,6 +2,8 @@
 import { jsx, Box, Text, Radio, Label, Input, Button, Heading } from "theme-ui";
 import { rgba } from "polished";
 import { useState } from "react";
+import { Script } from "gatsby";
+
 import dotPattern from "assets/images/dot-pattern.png";
 
 const presetAmounts = ["5-25", "25-50", "50-100", "100+"];
@@ -11,8 +13,10 @@ const DonationForm = () => {
     numEmployees: "50-100",
     firstName: "John",
     lastName: "Doe",
-    email: "email@gmail.com",
+    email: "hari@productledsales.io",
   });
+
+  const [loaded, setLoaded] = useState(false);
 
   const handleAmount = (e) => {
     setState({
@@ -128,6 +132,7 @@ const DonationForm = () => {
               className={state.numEmployees === amount ? "active" : ""}
             >
               <Radio
+                id="numEmployees"
                 value={amount}
                 name="numEmployees"
                 onChange={handleAmount}
@@ -138,11 +143,43 @@ const DonationForm = () => {
           ))}
         </Box>
         <Box sx={styles.buttonGroup}>
-          <Button variant="primary" sx={styles.submit}>
+          <Button variant="primary" sx={styles.submit} id="thisIsASampleButton">
             Submit
           </Button>
         </Box>
       </Box>
+      <Script
+        id="first-unique-id"
+        type="text/javascript"
+        src={"https://app.aysr.io/scheduler.min.js"}
+        onLoad={() => {
+          setLoaded(true);
+        }}
+      ></Script>
+      {loaded && (
+        <Script type="text/javascript">
+          {`console.log("rendered");
+          const button = document.querySelector("#thisIsASampleButton");
+          button.addEventListener("click", () => {
+            console.log("clicked");
+            const hero = new RevenueHero({ routerId: "99" });
+            hero
+              .submit({
+                firstname: document.getElementById("first-name").value,
+                lastname: document.getElementById("last-name").value,
+                email: document.getElementById("email").value,
+                noOfEmployees: document.querySelector('input[name="numEmployees"]:checked')?.value?? '50-100',
+              })
+              .then((data) => {
+                hero.dialog.open(data);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          });
+        `}
+        </Script>
+      )}
     </Box>
   );
 };
